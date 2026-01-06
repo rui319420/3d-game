@@ -1,92 +1,31 @@
-import {
-  Engine, Scene, FreeCamera, FollowCamera,
-  Vector3, HemisphericLight, MeshBuilder, 
-  HavokPlugin, PhysicsAggregate, PhysicsShapeType,
-  StandardMaterial, Color3,
-} from "@babylonjs/core";
-import HavokPhysics from "@babylonjs/havok";
+import { createBallGame } from "./ball";
+import { createDominoGame } from "./domino";
 
-async function createGame() {
-  const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
+const app = document.getElementById("app");
+const style = `
+  position: absolute; 
+  top: 50%; left: 50%; 
+  transform: translate(-50%, -50%); 
+  text-align: center;
+  font-family: sans-serif;
+`;
 
-  document.body.style.margin = "0";
-  document.body.style.overflow = "hidden";
-  canvas.style.width = "100%";
-  canvas.style.height = "100%";
+const menuDiv = document.createElement("div");
+menuDiv.style.cssText = style;
+menuDiv.innerHTML = `
+  <h1>ゲーム選択メニュー</h1>
+  <button id="btn-ball" style="padding: 10px 20px; font-size: 20px; cursor: pointer;">🔴 ボール転がし</button>
+  <br><br>
+  <button id="btn-domino" style="padding: 10px 20px; font-size: 20px; cursor: pointer;">🧱 ドミノ倒し</button>
+`;
+document.body.appendChild(menuDiv);
 
-  const inputMap = {};
-  window.addEventListener("keydown", (ev) => {
-    inputMap[ev.key] = true;
-  })
-  window.addEventListener("keyup", (ev) => {
-    inputMap[ev.key] = false;
-  })
+document.getElementById("btn-ball")?.addEventListener("click", () => {
+    menuDiv.remove();
+    createBallGame();
+});
 
-  const engine = new Engine(canvas, true);
-  const scene = new Scene(engine);
-
-  const havokInstance = await HavokPhysics({
-      locateFile: () => "./HavokPhysics.wasm"
-  });
-  const havokPlugin = new HavokPlugin(true, havokInstance);
-  scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
-
-  const sphere = MeshBuilder.CreateSphere("sphere", { diameter: 2 }, scene);
-  sphere.position.y = 5;
-
-  const sphereMat = new StandardMaterial("SphereMat", scene);
-  sphereMat.diffuseColor = new Color3(0.2, 0.7, 1);
-  sphere.material = sphereMat;
-
-  const ground = MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, scene);
-
-  const groundMat = new StandardMaterial("groundMat", scene);
-  groundMat.diffuseColor = new Color3(0.4, 0.8, 0.4);
-  ground.material = groundMat;
-
-  new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, scene);
-  const sphereAggregate = new PhysicsAggregate(sphere, PhysicsShapeType.SPHERE, { mass: 1, restitution: 0.7 }, scene);
-
-  scene.onBeforeRenderObservable.add(() => {
-    const body = sphereAggregate.body;
-
-    const power = 0.5;
-
-    if (inputMap["ArrowUp"]) {
-      body.applyImpulse(new Vector3(0, 0, power), sphere.getAbsolutePosition());
-    }
-    if (inputMap["ArrowDown"]) {
-      body.applyImpulse(new Vector3(0, 0, -power), sphere.getAbsolutePosition());
-    }
-    if (inputMap["ArrowLeft"]) { 
-      body.applyImpulse(new Vector3(-power, 0, 0), sphere.getAbsolutePosition());
-    }
-    if (inputMap["ArrowRight"]) {
-      body.applyImpulse(new Vector3(power, 0, 0), sphere.getAbsolutePosition());
-    }
-    if (inputMap[" "]) {
-      body.applyImpulse(new Vector3(0, 0.5, 0), sphere.getAbsolutePosition());
-    }
-  })
-
-  const camera = new FollowCamera("FollowCam", new Vector3(0, 10, -10), scene);
-  camera.lockedTarget = sphere; 
-  camera.radius = 10;
-  camera.heightOffset = 5;
-  camera.rotationOffset = 180;
-  camera.cameraAcceleration = 0.05;
-  camera.maxCameraSpeed = 20;
-  camera.setTarget(Vector3.Zero());
-  camera.attachControl(canvas, true);
-
-  const light = new HemisphericLight("light1", new Vector3(0, 1, 0), scene);
-
-  engine.runRenderLoop(() => {
-      scene.render();
-  });
-  window.addEventListener("resize", () => {
-      engine.resize();
-  });
-}
-
-createGame();
+document.getElementById("btn-domino")?.addEventListener("click", () => {
+    menuDiv.remove();
+    createDominoGame();
+});
