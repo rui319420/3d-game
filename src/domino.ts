@@ -25,7 +25,7 @@ export async function createDominoGame() {
   const havokPlugin = new HavokPlugin(true, havokInstance);
   scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
 
-  const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
+  const camera = new FreeCamera("camera1", new Vector3(0, 20, -20), scene);
   camera.setTarget(new Vector3(0, 0, 5));
   camera.attachControl(canvas, true);
 
@@ -41,14 +41,17 @@ export async function createDominoGame() {
   const dominoMat = new StandardMaterial("dominoMat", scene);
   dominoMat.diffuseColor = new Color3(0.2, 0.2, 1);
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 50; i++) {
     const domino = MeshBuilder.CreateBox("domino", { width: 1.5, height: 4.0, depth: 0.5 }, scene);
     domino.material = dominoMat;
 
-    domino.position.z = 2 + i * 1.2;
+    domino.position.z = 2 + i * 0.8;
+    domino.position.x = Math.sin(i * 0.2) * 2;
     domino.position.y = 3;
+
+    domino.rotation.y = Math.sin(i * 0.2) * 0.8
     
-    new PhysicsAggregate(domino, PhysicsShapeType.BOX, { mass: 0.5, friction: 0.5 }, scene);
+    new PhysicsAggregate(domino, PhysicsShapeType.BOX, { mass: 0.2, friction: 0.5 }, scene);
   }
 
   // ball
