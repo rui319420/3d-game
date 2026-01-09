@@ -37,6 +37,34 @@ export async function createDominoGame() {
   ground.material = groundMat;
   new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, scene);
 
+  // wall
+  const wallMat = new StandardMaterial("wallMat", scene);
+  wallMat.diffuseColor = new Color3(0.5, 0.3, 0.3);
+  wallMat.alpha = 0.5;
+
+  const wallHeight = 4;
+  const wallThickness = 1;
+
+  const wallsData = [
+    { width: wallThickness, depth: 40, x: -10, z: 0 },
+    { width: wallThickness, depth: 40, x: 10, z: 0 },
+    { width: 20, depth: wallThickness, x: 0, z: -20 },
+    { width: 20, depth: wallThickness, x: 0, z: 20 },
+  ]
+
+  wallsData.forEach((data, index) => {
+    const wall = MeshBuilder.CreateBox(`wall${index}`, {
+      width: data.width,
+      height: wallHeight,
+      depth: data.depth
+    }, scene);
+
+    wall.position.set(data.x, wallHeight / 2, data.z);
+    wall.material = wallMat;
+
+    new PhysicsAggregate(wall, PhysicsShapeType.BOX, { mass: 0 }, scene);
+  })
+
   // domino
   const dominoMat = new StandardMaterial("dominoMat", scene);
   dominoMat.diffuseColor = new Color3(0.2, 0.2, 1);
@@ -51,7 +79,7 @@ export async function createDominoGame() {
 
     domino.rotation.y = Math.sin(i * 0.2) * 0.8
     
-    new PhysicsAggregate(domino, PhysicsShapeType.BOX, { mass: 0.2, friction: 0.5 }, scene);
+    new PhysicsAggregate(domino, PhysicsShapeType.BOX, { mass: 0.5, friction: 0.5 }, scene);
   }
 
   // ball
