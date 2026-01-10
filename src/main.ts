@@ -17,6 +17,8 @@ menuDiv.innerHTML = `
   <button id="btn-ball" style="padding: 10px 20px; font-size: 20px; cursor: pointer;">🔴 ボール転がし</button>
   <br><br>
   <button id="btn-domino" style="padding: 10px 20px; font-size: 20px; cursor: pointer;">🧱 ドミノ倒し</button>
+  <br><br>
+  <button id="btn-slope" style="padding: 10px 20px; font-size: 20px; cursor: pointer;">⛰️ 坂</button>
 `;
 document.body.appendChild(menuDiv);
 
@@ -28,4 +30,9 @@ document.getElementById("btn-ball")?.addEventListener("click", () => {
 document.getElementById("btn-domino")?.addEventListener("click", () => {
     menuDiv.remove();
     createDominoGame();
+});
+
+document.getElementById("btn-slope")?.addEventListener("click", () => {
+    menuDiv.remove();
+    createSlopeGame();
 });

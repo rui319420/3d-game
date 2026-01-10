@@ -3,6 +3,8 @@ import { Engine, Scene, FreeCamera, Vector3, HemisphericLight, MeshBuilder,
     StandardMaterial, Color3
 } from "@babylonjs/core";
 import HavokPhysics from "@babylonjs/havok";
+import "@babylonjs/core/Debug/debugLayer";
+import "@babylonjs/inspector";
 
 export async function createDominoGame() {
   const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
@@ -73,7 +75,7 @@ export async function createDominoGame() {
     const domino = MeshBuilder.CreateBox("domino", { width: 1.5, height: 4.0, depth: 0.5 }, scene);
     domino.material = dominoMat;
 
-    domino.position.z = 2 + i * 0.8;
+    domino.position.z = 3 + i * 0.8;
     domino.position.x = Math.sin(i * 0.2) * 2;
     domino.position.y = 3;
 
@@ -99,7 +101,7 @@ export async function createDominoGame() {
         if (inputMap["ArrowUp"]) body.applyImpulse(new Vector3(0, 0, power), ball.getAbsolutePosition());
         if (inputMap["ArrowDown"]) body.applyImpulse(new Vector3(0, 0, -power), ball.getAbsolutePosition());
         if (inputMap["ArrowLeft"]) body.applyImpulse(new Vector3(-power, 0, 0), ball.getAbsolutePosition());
-        if (inputMap["ArrowRight"]) body.applyImpulse(new Vector3(power, 0, 0), ball.getAbsolutePosition());
+      if (inputMap["ArrowRight"]) body.applyImpulse(new Vector3(power, 0, 0), ball.getAbsolutePosition());
     });
 
   engine.runRenderLoop(() => {
