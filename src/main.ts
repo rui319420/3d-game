@@ -1,5 +1,6 @@
 import { createBallGame } from "./ball";
 import { createDominoGame } from "./domino";
+import { createSlopeGame } from "./slope";
 
 const app = document.getElementById("app");
 const style = `
