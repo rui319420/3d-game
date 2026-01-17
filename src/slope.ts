@@ -1,9 +1,11 @@
 import {
-  Engine, Scene, FreeCamera, Vector3, HemisphericLight, 
-  HavokPlugin, SceneLoader
+  Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, 
+  HavokPlugin, SceneLoader, PhysicsAggregate, PhysicsShapeType, Mesh,
 } from "@babylonjs/core";
 import HavokPhysics from "@babylonjs/havok";
 import "@babylonjs/loaders/glTF";
+import "@babylonjs/core/Debug/debugLayer";
+import "@babylonjs/inspector";
 
 export async function createSlopeGame() {
   const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
@@ -22,16 +24,23 @@ export async function createSlopeGame() {
   const havokPlugin = new HavokPlugin(true, havokInstance);
   scene.enablePhysics(new Vector3(0, -9.8, 0), havokPlugin);
 
-  const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
-  camera.setTarget(Vector3.Zero());
-  camera.attachControl(canvas, true);
+  const result = await SceneLoader.ImportMeshAsync("", "./", "myModel3.glb", scene);
 
-  const light = new HemisphericLight("light1", new Vector3(0, 1, 0), scene);
+  result.meshes.forEach((mesh) => {
+    if (mesh.getTotalVertices() > 0) {
+      (mesh as Mesh).bakeCurrentTransformIntoVertices(); 
+      new PhysicsAggregate(mesh, PhysicsShapeType.MESH, { mass: 0, restitution: 0.5 }, scene);
+    }
+  });
 
-  const result = await SceneLoader.ImportMeshAsync("", "./", "myModel.glb", scene);
+  scene.createDefaultCameraOrLight(true, true, true);
 
-  const rootMesh = result.meshes[0];
-  rootMesh.position = new Vector3(0, 0, 0); 
+  const camera = scene.activeCamera;
+  if (camera) {
+    camera.attachControl(canvas, true);
+    camera.maxZ = 10000; 
+
+  }
 
   engine.runRenderLoop(() => {
       scene.render();
